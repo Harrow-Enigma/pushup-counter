@@ -1,0 +1,14 @@
+button{
+    background-color: chocolate;
+    color:aquamarine;
+    border: none;
+    border-radius: 10px;
+    font-size: 30px;
+    font-family: sans-serif;
+    padding: 30px;
+    margin: 20px;
+}
+
+button:hover{
+    cursor: pointer;
+}

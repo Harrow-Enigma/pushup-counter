@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pushup Counter</title>
+
+    <!-- Require the peer dependencies of pose-detection. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+
+    <!-- You must explicitly require a TF.js backend if you're not using the TF.js union bundle. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <!-- Alternatively you can use the WASM backend: <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm/dist/tf-backend-wasm.js"></script> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+  </head>
+
+  <body>
+    <h1>MoveNET Demo</h1>
+    <video id="videoElement" autoplay="true" style="display: none"></video>
+    <canvas id="canvas"></canvas>
+    <script>
+      async function getPose() {
+        const detector = await poseDetection.createDetector(
+          poseDetection.SupportedModels.MoveNet
+        );
+        const poses = await detector.estimatePoses(video);
+
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        function drawPoint(y, x, r, name) {
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, 2 * Math.PI);
+          ctx.fillStyle = "#ff0000";
+          ctx.fill();
+
+          ctx.font = "7px Arial";
+          ctx.fillText(name, x+7, y+2);
+        }
+
+        function drawSegment(pair1, pair2, color, scale) {
+          ctx.beginPath();
+          ctx.moveTo(pair1.x * scale, pair1.y * scale);
+          ctx.lineTo(pair2.x * scale, pair2.y * scale);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = color;
+          ctx.stroke();
+        }
+
+        function drawKeypoints(keypoints) {
+          for (let i = 0; i < keypoints.length; i++) {
+            const keypoint = keypoints[i];
+            const { y, x } = keypoint;
+            drawPoint(y, x, 5, keypoint.name);
+          }
+        }
+        // if (!poses.length === 0)
+        
+        if (!(poses.length == 0)){
+          drawKeypoints(poses[0].keypoints);
+        }
+      }
+
+      const video = document.getElementById("videoElement");
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: false })
+        .then(function (stream) {
+          window.stream = stream;
+          video.srcObject = stream;
+          // console.log("Hello World!");
+
+          video.addEventListener("loadeddata", (event) => {
+            setInterval(getPose, 1000);
+          });
+        })
+        .catch(function (error) {
+          
+          console.log("Camera blocked");
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Don't Learn JS</title>
+
+    <!-- Bootstrap css-->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+
+    <!-- bootstrap js -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- import jquery -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+    <!-- Require the peer dependencies of pose-detection. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+
+    <!-- You must explicitly require a TF.js backend if you're not using the TF.js union bundle. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <!-- Alternatively you can use the WASM backend: <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm/dist/tf-backend-wasm.js"></script> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+  </head>
+
+  <body>
+    <main>
+      <div class="container py-4">
+        <header class="pb-3 mb-4 border-bottom">
+          <a
+            href="/"
+            class="d-flex align-items-center text-dark text-decoration-none"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="32"
+              class="me-2"
+              viewBox="0 0 118 94"
+              role="img"
+            >
+              <title>Bootstrap</title>
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z"
+                fill="currentColor"
+              ></path>
+            </svg>
+            <span class="fs-4">MoveNET Demo</span>
+          </a>
+        </header>
+
+        <div class="p-5 mb-4 bg-light rounded-3 shadow">
+          <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">In this demo</h1>
+            <p class="col-md-8 fs-4">
+              This is a demo of the PoseNet model. It uses the webcam to detect
+              people's poses and displays them on the screen.
+            </p>
+          </div>
+        </div>
+
+        <div class="row align-items-md-stretch">
+          <div class="col-md-6">
+            <div class="h-100 p-5 bg-light rounded-3 shadow">
+              <div id="theater">
+                <video
+                  id="videoElement"
+                  autoplay="true"
+                  style="display: none"
+                ></video>
+                <canvas id="canvas"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="h-100 p-5 bg-light rounded-3 shadow">
+              <h2>Add borders</h2>
+              <p>
+                Or, keep it light and add a border for some added definition to
+                the boundaries of your content. Be sure to look under the hood
+                at the source HTML here as we've adjusted the alignment and
+                sizing of both column's content for equal-height.
+              </p>
+              <button class="btn btn-outline-secondary" type="button">
+                Example button
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <footer class="pt-3 mt-4 text-muted border-top">© 2021</footer>
+      </div>
+    </main>
+  </body>
+
+  <script>
+    async function getPose() {
+      const detector = await poseDetection.createDetector(
+        poseDetection.SupportedModels.MoveNet
+      );
+      const poses = await detector.estimatePoses(video);
+      // console.log(poses[0].keypoints);
+      console.log(poses);
+
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      function drawPoint(y, x, r, name) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
+        ctx.fillStyle = "#ff0000";
+        ctx.fill();
+
+        ctx.font = "7px Arial";
+        ctx.fillText(name, x+7, y+2);
+      }
+
+      function drawSegment(pair1, pair2, color, scale) {
+        ctx.beginPath();
+        ctx.moveTo(pair1.x * scale, pair1.y * scale);
+        ctx.lineTo(pair2.x * scale, pair2.y * scale);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = color;
+        ctx.stroke();
+      }
+
+      function drawKeypoints(keypoints) {
+        for (let i = 0; i < keypoints.length; i++) {
+          const keypoint = keypoints[i];
+          //console.log(keypoint);
+          //console.log(`keypoint in drawkeypoints ${keypoint}`);
+          const { y, x } = keypoint;
+          drawPoint(y, x, 5, keypoint.name);
+        }
+      }
+      // if (!poses.length === 0)
+      
+      if (!(poses.length == 0)){
+        drawKeypoints(poses[0].keypoints);
+      }
+    }
+
+    const video = document.getElementById("videoElement");
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: false })
+      .then(function (stream) {
+        window.stream = stream;
+        video.srcObject = stream;
+        console.log("Hello World!");
+
+        video.addEventListener("loadeddata", (event) => {
+          setInterval(getPose, 1000);
+        });
+      })
+      .catch(function (error) {
+        console.log("Camera blocked");
+      });
+  </script>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- DEPS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+
+    <!-- SCRIPTS -->
+    <script src="/utils.js" defer></script>
+    <script src="/index.js" defer></script>
+
+    <!-- STYLES -->
+    <link rel="stylesheet" href="/global.css">
+
+    <title>Pushup Counter</title>
+  </head>
+
+  <body>
+    <h1>MoveNET Demo</h1>
+    <video id="videoElement" autoplay="true" style="display: none"></video>
+    <div class="container">
+      <p>Loading...</p>
+      <div id="indicator_pushups">Pushups: 0</div>  
+      <div id="indicator_position">Position: </div>
+    </div>
+  </body>
+</html>

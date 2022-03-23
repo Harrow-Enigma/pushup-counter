@@ -120,7 +120,7 @@ navigator.mediaDevices
         .createDetector(poseDetection.SupportedModels.MoveNet)
         .then((detector) => {
           window.Detector = detector;
-          setInterval(getPose, 500);
+          setInterval(getPose, 10);
         });
     });
   })

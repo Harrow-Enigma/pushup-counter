@@ -5,8 +5,10 @@ let pushUps = 0;
 const canvas = utils.createElement("canvas", {
   id: "canvas",
 });
+
 const ctx = canvas.getContext("2d");
 const video = document.getElementById("videoElement");
+const snd = new Audio("a-tone.wav");
 
 const getPose = async () => {
   const poses = await Detector.estimatePoses(video);
@@ -47,8 +49,18 @@ const getPose = async () => {
     }
   };
 
+
   if (poses.length) {
     const { keypoints } = poses[0];
+    let i = 0;
+    while (i != keypoints.length) {
+      if (keypoints[i]['score'] < 0.3) {
+        keypoints.splice(i, 1)
+        i--;
+      }
+      i++;
+    }
+    // console.log(keypoints)
     drawKeypoints(keypoints);
     let elbowPositions = keypoints.filter((k) => {
       return k.name === "left_elbow" || k.name === "right_elbow";
@@ -59,6 +71,10 @@ const getPose = async () => {
     let rightShoulder = keypoints.filter((k) => {
       return k.name === "right_shoulder";
     });
+
+
+    // console.log(elbowPositions['score'])
+    // console.log(elbowPositions)
 
     // draw segment between left_elbow and right_elbow
     drawSegment(
@@ -92,6 +108,8 @@ const getPose = async () => {
     } else {
       if (currentPosition === "DOWN") {
         pushUps++;
+        snd.currentTime=0;
+        snd.play();
         document.getElementById(
           "indicator_pushups"
         ).innerText = `Pushups: ${pushUps}`;
@@ -100,12 +118,12 @@ const getPose = async () => {
       document.getElementById("indicator_position").innerText = "Position: UP";
     }
 
-    // if (currentPosition === "DOWN") {
-    //   pushUps++;
-    //   document.getElementById(
-    //     "indicator_pushups"
-    //   ).innerText = `Pushups: ${pushUps}`;
-    // }
+  // if (currentPosition === "DOWN") {
+  //   pushUps++;
+  //   document.getElementById(
+  //     "indicator_pushups"
+  //   ).innerText = `Pushups: ${pushUps}`;
+  // }
   }
 };
 
@@ -125,5 +143,6 @@ navigator.mediaDevices
     });
   })
   .catch((error) => {
+    console.log(error)
     console.log("Camera blocked");
   });

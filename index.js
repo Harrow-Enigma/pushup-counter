@@ -62,68 +62,71 @@ const getPose = async () => {
     }
     // console.log(keypoints)
     drawKeypoints(keypoints);
-    let elbowPositions = keypoints.filter((k) => {
-      return k.name === "left_elbow" || k.name === "right_elbow";
-    });
-    let leftShoulder = keypoints.filter((k) => {
-      return k.name === "left_shoulder";
-    });
-    let rightShoulder = keypoints.filter((k) => {
-      return k.name === "right_shoulder";
-    });
+    try{
+      let elbowPositions = keypoints.filter((k) => {
+        return k.name === "left_elbow" || k.name === "right_elbow";
+      });
+      let leftShoulder = keypoints.filter((k) => {
+        return k.name === "left_shoulder";
+      });
+      let rightShoulder = keypoints.filter((k) => {
+        return k.name === "right_shoulder";
+      });
 
 
-    // console.log(elbowPositions['score'])
-    // console.log(elbowPositions)
+      // console.log(elbowPositions['score'])
+      // console.log(elbowPositions)
 
-    // draw segment between left_elbow and right_elbow
-    drawSegment(
-      { x: elbowPositions[0].x, y: elbowPositions[0].y },
-      { x: elbowPositions[1].x, y: elbowPositions[1].y },
-      "red",
-      canvas.width / video.videoWidth
-    );
+      // draw segment between left_elbow and right_elbow
+      drawSegment(
+        { x: elbowPositions[0].x, y: elbowPositions[0].y },
+        { x: elbowPositions[1].x, y: elbowPositions[1].y },
+        "red",
+        canvas.width / video.videoWidth
+      );
 
-    let leftShoulderDistance = utils.getPointToLine(
-      leftShoulder[0].x,
-      leftShoulder[0].y,
-      elbowPositions[0].x,
-      elbowPositions[0].y,
-      elbowPositions[1].x,
-      elbowPositions[1].y
-    );
-    let rightShoulderDistance = utils.getPointToLine(
-      rightShoulder[0].x,
-      rightShoulder[0].y,
-      elbowPositions[0].x,
-      elbowPositions[0].y,
-      elbowPositions[1].x,
-      elbowPositions[1].y
-    );
+      let leftShoulderDistance = utils.getPointToLine(
+        leftShoulder[0].x,
+        leftShoulder[0].y,
+        elbowPositions[0].x,
+        elbowPositions[0].y,
+        elbowPositions[1].x,
+        elbowPositions[1].y
+      );
+      let rightShoulderDistance = utils.getPointToLine(
+        rightShoulder[0].x,
+        rightShoulder[0].y,
+        elbowPositions[0].x,
+        elbowPositions[0].y,
+        elbowPositions[1].x,
+        elbowPositions[1].y
+      );
 
-    if (leftShoulderDistance + rightShoulderDistance < 120) {
-      currentPosition = "DOWN";
-      document.getElementById("indicator_position").innerText =
-        "Position: DOWN";
-    } else {
-      if (currentPosition === "DOWN") {
-        pushUps++;
-        snd.currentTime=0;
-        snd.play();
-        document.getElementById(
-          "indicator_pushups"
-        ).innerText = `Pushups: ${pushUps}`;
+      if (leftShoulderDistance + rightShoulderDistance < 120) {
+        currentPosition = "DOWN";
+        document.getElementById("indicator_position").innerText =
+          "Position: DOWN";
+      } else {
+        if (currentPosition === "DOWN") {
+          pushUps++;
+          snd.currentTime=0;
+          snd.play();
+          document.getElementById(
+            "indicator_pushups"
+          ).innerText = `Pushups: ${pushUps}`;
+        }
+        currentPosition = "UP";
+        document.getElementById("indicator_position").innerText = "Position: UP";
       }
-      currentPosition = "UP";
-      document.getElementById("indicator_position").innerText = "Position: UP";
-    }
 
-  // if (currentPosition === "DOWN") {
-  //   pushUps++;
-  //   document.getElementById(
-  //     "indicator_pushups"
-  //   ).innerText = `Pushups: ${pushUps}`;
-  // }
+    // if (currentPosition === "DOWN") {
+    //   pushUps++;
+    //   document.getElementById(
+    //     "indicator_pushups"
+    //   ).innerText = `Pushups: ${pushUps}`;
+    // }
+    }
+    catch {}
   }
 };
 

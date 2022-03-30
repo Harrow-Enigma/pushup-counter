@@ -6,6 +6,4 @@ now deployed at https://pushupcounter.netlify.app
 
 ## Log
 
-update 23/03/2022: only consider keypoints with score > 0.3
-
-update 30/03/2022: minor fixes including muting expected error messages in console
+update 23/03/2022: only consider keypoints with score > 0.3\update 30/03/2022: minor fixes including muting expected error messages in console
